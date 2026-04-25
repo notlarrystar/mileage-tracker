@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -8,68 +9,90 @@
   <meta name="apple-mobile-web-app-title" content="Miles" />
   <meta name="theme-color" content="#1a1a2e" />
   <title>Mileage Tracker</title>
-
-  <script>
-    const manifestData = {
-      name: "Mileage Tracker",
-      short_name: "Miles",
-      start_url: ".",
-      display: "standalone",
-      background_color: "#f5f0e8",
-      theme_color: "#1a1a2e",
-      icons: [{
-        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%231a1a2e'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle' fill='%23c9a84c'%3E🚗%3C/text%3E%3C/svg%3E",
-        sizes: "192x192", type: "image/svg+xml"
-      }]
-    };
-    const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-    const manifestUrl = URL.createObjectURL(blob);
-    document.write(`<link rel="manifest" href="${manifestUrl}">`);
-  </script>
-
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1a2e'/%3E%3Ctext x='90' y='125' font-size='100' text-anchor='middle' fill='%23c9a84c'%3E🚗%3C/text%3E%3C/svg%3E" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet" />
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #f5f0e8; --card: #ffffff; --navy: #1a1a2e; --gold: #c9a84c;
       --gold-light: #e8d5a3; --text: #2c2c2c; --muted: #888;
       --border: #d6cbb8; --row-alt: #faf7f2; --danger: #c0392b;
-      --safe-top: env(safe-area-inset-top, 0px); --safe-bot: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
     }
-    body { font-family: 'Source Serif 4', Georgia, serif; background: var(--bg); color: var(--text); min-height: 100vh; min-height: -webkit-fill-available; padding-bottom: calc(80px + var(--safe-bot)); }
-    .header { background: var(--navy); color: #e8dcc8; padding: calc(16px + var(--safe-top)) 20px 18px; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--gold); }
+    body {
+      font-family: -apple-system, Georgia, serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; min-height: -webkit-fill-available;
+      padding-bottom: calc(80px + var(--safe-bot));
+    }
+    .header {
+      background: var(--navy); color: #e8dcc8;
+      padding: calc(16px + var(--safe-top)) 20px 18px;
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 3px solid var(--gold);
+    }
     .header-inner { display: flex; justify-content: space-between; align-items: flex-end; max-width: 700px; margin: 0 auto; }
     .header-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
-    .header-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; letter-spacing: 0.5px; }
+    .header-title { font-size: 26px; font-weight: 700; }
     .header-total-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); text-align: right; }
-    .header-total-num { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #fff; text-align: right; }
+    .header-total-num { font-size: 26px; font-weight: 700; color: #fff; text-align: right; }
     .main { max-width: 700px; margin: 0 auto; padding: 0 14px; }
-    .form-card { background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--gold); padding: 18px 16px 14px; margin: 18px 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .form-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-top: 3px solid var(--gold); padding: 18px 16px 14px;
+      margin: 18px 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
     .form-label-row { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .form-grid-full { grid-column: 1 / -1; }
     label.field-label { display: block; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-    input[type="text"], input[type="number"], input[type="date"] { width: 100%; padding: 10px; border: 1px solid var(--border); background: #faf8f4; font-size: 15px; font-family: 'Source Serif 4', serif; color: var(--text); outline: none; -webkit-appearance: none; border-radius: 0; }
+    input[type="text"], input[type="number"], input[type="date"] {
+      width: 100%; padding: 12px 10px;
+      border: 1px solid var(--border); background: #faf8f4;
+      font-size: 16px; font-family: -apple-system, Georgia, serif;
+      color: var(--text); outline: none;
+      -webkit-appearance: none; border-radius: 0;
+    }
     input:focus { border-color: var(--navy); background: #fff; }
-    .round-trip-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .rt-checkbox { width: 22px; height: 22px; accent-color: var(--navy); cursor: pointer; flex-shrink: 0; }
-    .rt-label { font-size: 14px; color: var(--text); cursor: pointer; }
+    .round-trip-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 10px 0; }
+    .rt-checkbox { width: 24px; height: 24px; accent-color: var(--navy); cursor: pointer; flex-shrink: 0; }
+    .rt-label { font-size: 15px; color: var(--text); cursor: pointer; }
     .rt-hint { font-size: 12px; color: var(--muted); }
     .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
-    .btn-primary { background: var(--navy); color: var(--gold); border: none; padding: 11px 22px; font-size: 13px; font-family: 'Source Serif 4', serif; letter-spacing: 1px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    .btn-primary:active { opacity: 0.8; }
-    .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 11px 16px; font-size: 13px; font-family: 'Source Serif 4', serif; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .btn-primary {
+      background: var(--navy); color: var(--gold);
+      border: none; padding: 14px 24px;
+      font-size: 15px; font-family: -apple-system, Georgia, serif;
+      font-weight: 600; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      border-radius: 0; min-width: 120px;
+      touch-action: manipulation;
+    }
+    .btn-primary:active { opacity: 0.75; }
+    .btn-secondary {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border); padding: 14px 16px;
+      font-size: 15px; font-family: -apple-system, Georgia, serif;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+      border-radius: 0; touch-action: manipulation;
+    }
     .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
     .entry-count { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
     .toolbar-btns { display: flex; gap: 6px; }
-    .btn-tool { background: var(--navy); color: var(--gold-light); border: none; padding: 7px 14px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: 'Source Serif 4', serif; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    .btn-tool:active { opacity: 0.8; }
-    .table-wrap { background: var(--card); border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px; }
+    .btn-tool {
+      background: var(--navy); color: var(--gold-light);
+      border: none; padding: 9px 14px;
+      font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+      font-family: -apple-system, Georgia, serif; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation; border-radius: 0;
+    }
+    .btn-tool:active { opacity: 0.75; }
+    .table-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
     thead tr { background: var(--navy); color: #e8dcc8; }
     th { padding: 10px 12px; text-align: left; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; cursor: pointer; user-select: none; white-space: nowrap; }
     td { padding: 10px 12px; color: var(--text); border-bottom: 1px solid #ece6da; }
@@ -82,18 +105,39 @@
     tfoot tr { background: #f0ebe0; border-top: 2px solid var(--gold); }
     tfoot td { padding: 10px 12px; font-size: 13px; }
     .foot-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-    .foot-total { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--navy); }
+    .foot-total { font-size: 18px; font-weight: 700; color: var(--navy); }
     .row-actions { display: flex; gap: 6px; }
-    .btn-row { background: transparent; padding: 4px 9px; font-size: 11px; cursor: pointer; font-family: 'Source Serif 4', serif; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
+    .btn-row {
+      background: transparent; padding: 6px 10px;
+      font-size: 12px; cursor: pointer;
+      font-family: -apple-system, Georgia, serif;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap; touch-action: manipulation; border-radius: 0;
+    }
     .btn-edit { border: 1px solid var(--navy); color: var(--navy); }
     .btn-delete { border: 1px solid var(--danger); color: var(--danger); }
     .btn-row:active { opacity: 0.6; }
     .empty { text-align: center; color: var(--muted); padding: 50px 20px; font-size: 15px; line-height: 1.8; }
-    .install-banner { background: var(--gold); color: var(--navy); padding: 12px 16px; margin: 14px 0 0; font-size: 13px; line-height: 1.5; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .install-banner {
+      background: var(--gold); color: var(--navy);
+      padding: 12px 16px; margin: 14px 0 0;
+      font-size: 13px; line-height: 1.5;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
     .install-banner b { display: block; font-size: 14px; margin-bottom: 2px; }
-    .btn-dismiss { background: var(--navy); color: var(--gold); border: none; padding: 6px 12px; font-size: 12px; cursor: pointer; flex-shrink: 0; font-family: 'Source Serif 4', serif; }
+    .btn-dismiss {
+      background: var(--navy); color: var(--gold);
+      border: none; padding: 8px 14px; font-size: 13px;
+      cursor: pointer; flex-shrink: 0;
+      font-family: -apple-system, Georgia, serif;
+      touch-action: manipulation;
+    }
     #csv-import { display: none; }
-    @media (max-width: 480px) { .header-title { font-size: 22px; } .header-total-num { font-size: 22px; } .form-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) {
+      .header-title { font-size: 22px; }
+      .header-total-num { font-size: 22px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -112,12 +156,13 @@
 </div>
 
 <div class="main">
+
   <div class="install-banner" id="install-banner" style="display:none">
     <div>
       <b>📱 Add to Home Screen</b>
-      Tap the Share button in Safari, then "Add to Home Screen" to use this as an app.
+      Tap Share in Safari → "Add to Home Screen" to use as an app.
     </div>
-    <button class="btn-dismiss" onclick="dismissBanner()">Got it</button>
+    <button class="btn-dismiss" id="btn-dismiss">Got it</button>
   </div>
 
   <div class="form-card">
@@ -125,7 +170,7 @@
     <div class="form-grid">
       <div class="form-grid-full">
         <label class="field-label" for="inp-name">Description / Trip Name</label>
-        <input type="text" id="inp-name" placeholder="e.g. Client visit, Costco run…" autocomplete="off" />
+        <input type="text" id="inp-name" placeholder="e.g. Client visit, Costco run…" autocomplete="off" autocorrect="off" />
       </div>
       <div>
         <label class="field-label" for="inp-miles">Miles</label>
@@ -141,14 +186,308 @@
       <label class="rt-label" for="inp-rt">Round Trip <span class="rt-hint">(doubles mileage)</span></label>
     </div>
     <div class="form-actions">
-      <button class="btn-secondary" id="btn-cancel" style="display:none" onclick="cancelEdit()">Cancel</button>
-      <button class="btn-primary" onclick="handleSubmit()">Add Entry</button>
+      <button class="btn-secondary" id="btn-cancel" style="display:none">Cancel</button>
+      <button class="btn-primary" id="btn-submit">Add Entry</button>
     </div>
   </div>
 
   <div class="toolbar">
     <div class="entry-count" id="entry-count">0 entries</div>
     <div class="toolbar-btns">
-      <button class="btn-tool" onclick="exportCSV()">Export CSV</button>
-      <button class="btn-tool" onclick="document.getElementById('csv-import').click()">Import CSV</button>
-      <input​​​​​​​​​​​​​​​​
+      <button class="btn-tool" id="btn-export">Export CSV</button>
+      <button class="btn-tool" id="btn-import-trigger">Import CSV</button>
+      <input type="file" id="csv-import" accept=".csv" />
+    </div>
+  </div>
+
+  <div id="table-container"></div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const STORAGE_KEY = 'mileage_tracker_v1';
+  let entries = [];
+  let editId = null;
+  let sortKey = 'date';
+  let sortDir = 'desc';
+
+  // ── Persistence ──────────────────────────────────────────────────────────
+  function load() {
+    try { entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch(e) { entries = []; }
+  }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+    catch(e) { alert('Could not save data. Storage may be full.'); }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function todayStr() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+day;
+  }
+
+  function fmtDate(s) {
+    if (!s) return '';
+    const parts = s.split('-');
+    if (parts.length !== 3) return s;
+    return parts[1]+'/'+parts[2]+'/'+parts[0];
+  }
+
+  function fmtMiles(n) { return parseFloat(n).toFixed(1); }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────
+  function render() {
+    var total = 0;
+    for (var i=0; i<entries.length; i++) total += entries[i].actual;
+    document.getElementById('total-display').textContent = fmtMiles(total);
+    document.getElementById('entry-count').textContent =
+      entries.length + (entries.length === 1 ? ' entry' : ' entries');
+
+    var container = document.getElementById('table-container');
+
+    if (entries.length === 0) {
+      container.innerHTML = '<div class="empty">No entries yet.<br>Add your first trip above.</div>';
+      return;
+    }
+
+    var sorted = entries.slice().sort(function(a, b) {
+      var av = a[sortKey], bv = b[sortKey];
+      if (sortKey === 'actual' || sortKey === 'miles') { av = +av; bv = +bv; }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    function arrow(k) { return sortKey===k ? (sortDir==='asc' ? ' ▲' : ' ▼') : ' ⬍'; }
+
+    var rows = sorted.map(function(e) {
+      return '<tr data-id="'+e.id+'" class="'+(editId===e.id?'editing':'')+'">' +
+        '<td>'+fmtDate(e.date)+'</td>' +
+        '<td style="font-weight:500">'+escHtml(e.name)+'</td>' +
+        '<td>'+fmtMiles(e.miles)+'</td>' +
+        '<td>'+(e.roundTrip ? '<span class="badge-rt">YES</span>' : '<span class="badge-no">—</span>')+'</td>' +
+        '<td class="total-miles">'+fmtMiles(e.actual)+'</td>' +
+        '<td><div class="row-actions">' +
+          '<button class="btn-row btn-edit" data-action="edit" data-id="'+e.id+'">Edit</button>' +
+          '<button class="btn-row btn-delete" data-action="delete" data-id="'+e.id+'">Del</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+
+    container.innerHTML =
+      '<div class="table-wrap"><table>' +
+        '<thead><tr>' +
+          '<th data-sort="date">Date'+arrow('date')+'</th>' +
+          '<th data-sort="name">Description'+arrow('name')+'</th>' +
+          '<th data-sort="miles">Miles'+arrow('miles')+'</th>' +
+          '<th data-sort="roundTrip">Round Trip'+arrow('roundTrip')+'</th>' +
+          '<th data-sort="actual">Total'+arrow('actual')+'</th>' +
+          '<th>Actions</th>' +
+        '</tr></thead>' +
+        '<tbody>'+rows+'</tbody>' +
+        '<tfoot><tr>' +
+          '<td colspan="4" class="foot-label">'+entries.length+(entries.length===1?' entry':' entries')+'</td>' +
+          '<td class="foot-total">'+fmtMiles(total)+'</td>' +
+          '<td></td>' +
+        '</tr></tfoot>' +
+      '</table></div>';
+  }
+
+  // ── Form ─────────────────────────────────────────────────────────────────
+  function getForm() {
+    return {
+      name: document.getElementById('inp-name').value.trim(),
+      miles: parseFloat(document.getElementById('inp-miles').value),
+      date: document.getElementById('inp-date').value,
+      roundTrip: document.getElementById('inp-rt').checked
+    };
+  }
+
+  function setForm(f) {
+    document.getElementById('inp-name').value = f.name || '';
+    document.getElementById('inp-miles').value = f.miles !== undefined ? f.miles : '';
+    document.getElementById('inp-date').value = f.date || todayStr();
+    document.getElementById('inp-rt').checked = !!f.roundTrip;
+  }
+
+  function clearForm() {
+    setForm({ name: '', miles: '', date: todayStr(), roundTrip: false });
+  }
+
+  function handleSubmit() {
+    var f = getForm();
+    if (!f.name) { alert('Please enter a description.'); return; }
+    if (isNaN(f.miles) || f.miles <= 0) { alert('Please enter a valid mileage.'); return; }
+    if (!f.date) { alert('Please select a date.'); return; }
+
+    var actual = f.roundTrip ? f.miles * 2 : f.miles;
+
+    if (editId !== null) {
+      for (var i=0; i<entries.length; i++) {
+        if (entries[i].id === editId) {
+          entries[i] = { id: editId, name: f.name, miles: f.miles, date: f.date, roundTrip: f.roundTrip, actual: actual };
+          break;
+        }
+      }
+      exitEditMode();
+    } else {
+      entries.push({ id: Date.now(), name: f.name, miles: f.miles, date: f.date, roundTrip: f.roundTrip, actual: actual });
+    }
+
+    save();
+    clearForm();
+    render();
+  }
+
+  function startEdit(id) {
+    editId = id;
+    var e = null;
+    for (var i=0; i<entries.length; i++) { if (entries[i].id === id) { e = entries[i]; break; } }
+    if (!e) return;
+    setForm(e);
+    document.getElementById('form-mode-label').textContent = '✎ Edit Entry';
+    document.getElementById('btn-cancel').style.display = 'inline-block';
+    document.getElementById('btn-submit').textContent = 'Save Changes';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    render();
+  }
+
+  function exitEditMode() {
+    editId = null;
+    document.getElementById('form-mode-label').textContent = '+ New Entry';
+    document.getElementById('btn-cancel').style.display = 'none';
+    document.getElementById('btn-submit').textContent = 'Add Entry';
+  }
+
+  function cancelEdit() {
+    exitEditMode();
+    clearForm();
+    render();
+  }
+
+  function deleteEntry(id) {
+    if (!confirm('Delete this entry?')) return;
+    entries = entries.filter(function(e) { return e.id !== id; });
+    if (editId === id) { exitEditMode(); clearForm(); }
+    save();
+    render();
+  }
+
+  // ── Sort ─────────────────────────────────────────────────────────────────
+  function setSort(key) {
+    if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    else { sortKey = key; sortDir = 'asc'; }
+    render();
+  }
+
+  // ── CSV ──────────────────────────────────────────────────────────────────
+  function exportCSV() {
+    if (entries.length === 0) { alert('No entries to export.'); return; }
+    var header = 'Date,Description,Miles,Round Trip,Total Miles\n';
+    var rows = entries.map(function(e) {
+      return e.date+',"'+e.name.replace(/"/g,'""')+'",'+e.miles+','+(e.roundTrip?'Yes':'No')+','+e.actual;
+    }).join('\n');
+    var blob = new Blob([header+rows], { type: 'text/csv' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'mileage-'+todayStr()+'.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function importCSV(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var lines = e.target.result.trim().split('\n').slice(1);
+      var added = 0;
+      lines.forEach(function(line) {
+        var cols = line.match(/(".*?"|[^,]+)(?=,|$)/g);
+        if (!cols || cols.length < 4) return;
+        var date = cols[0].trim();
+        var name = cols[1].trim().replace(/^"|"$/g,'').replace(/""/g,'"');
+        var miles = parseFloat(cols[2]);
+        var roundTrip = cols[3].trim().toLowerCase() === 'yes';
+        if (!date || !name || isNaN(miles)) return;
+        var actual = roundTrip ? miles*2 : miles;
+        entries.push({ id: Date.now()+added, date: date, name: name, miles: miles, roundTrip: roundTrip, actual: actual });
+        added++;
+      });
+      save(); render();
+      alert('Imported '+added+' entries.');
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  // ── Install Banner ───────────────────────────────────────────────────────
+  function showInstallBanner() {
+    var dismissed = localStorage.getItem('install_dismissed');
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isStandalone = window.navigator.standalone;
+    if (isIOS && !isStandalone && !dismissed) {
+      document.getElementById('install-banner').style.display = 'flex';
+    }
+  }
+
+  // ── Event Listeners ──────────────────────────────────────────────────────
+  document.getElementById('btn-submit').addEventListener('click', handleSubmit);
+  document.getElementById('btn-cancel').addEventListener('click', cancelEdit);
+  document.getElementById('btn-export').addEventListener('click', exportCSV);
+  document.getElementById('btn-import-trigger').addEventListener('click', function() {
+    document.getElementById('csv-import').click();
+  });
+  document.getElementById('csv-import').addEventListener('change', importCSV);
+  document.getElementById('btn-dismiss').addEventListener('click', function() {
+    localStorage.setItem('install_dismissed','1');
+    document.getElementById('install-banner').style.display = 'none';
+  });
+
+  // Table click delegation (sort + row actions)
+  document.getElementById('table-container').addEventListener('click', function(e) {
+    var th = e.target.closest('th[data-sort]');
+    if (th) { setSort(th.getAttribute('data-sort')); return; }
+    var btn = e.target.closest('button[data-action]');
+    if (btn) {
+      var action = btn.getAttribute('data-action');
+      var id = parseInt(btn.getAttribute('data-id'), 10);
+      if (action === 'edit') startEdit(id);
+      if (action === 'delete') deleteEntry(id);
+    }
+  });
+
+  // Enter key on inputs
+  ['inp-name','inp-miles','inp-date'].forEach(function(id) {
+    document.getElementById(id).addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleSubmit();
+    });
+  });
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  load();
+  clearForm();
+  render();
+  showInstallBanner();
+
+})();
+</script>
+
+</body>
+</html>
