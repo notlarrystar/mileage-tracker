@@ -2,490 +2,461 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Miles" />
-  <meta name="theme-color" content="#1a1a2e" />
-  <title>Mileage Tracker</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #f5f0e8; --card: #ffffff; --navy: #1a1a2e; --gold: #c9a84c;
-      --gold-light: #e8d5a3; --text: #2c2c2c; --muted: #888;
-      --border: #d6cbb8; --row-alt: #faf7f2; --danger: #c0392b;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bot: env(safe-area-inset-bottom, 0px);
-    }
-    body {
-      font-family: -apple-system, Georgia, serif;
-      background: var(--bg); color: var(--text);
-      min-height: 100vh; min-height: -webkit-fill-available;
-      padding-bottom: calc(80px + var(--safe-bot));
-    }
-    .header {
-      background: var(--navy); color: #e8dcc8;
-      padding: calc(16px + var(--safe-top)) 20px 18px;
-      position: sticky; top: 0; z-index: 100;
-      border-bottom: 3px solid var(--gold);
-    }
-    .header-inner { display: flex; justify-content: space-between; align-items: flex-end; max-width: 700px; margin: 0 auto; }
-    .header-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
-    .header-title { font-size: 26px; font-weight: 700; }
-    .header-total-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); text-align: right; }
-    .header-total-num { font-size: 26px; font-weight: 700; color: #fff; text-align: right; }
-    .main { max-width: 700px; margin: 0 auto; padding: 0 14px; }
-    .form-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-top: 3px solid var(--gold); padding: 18px 16px 14px;
-      margin: 18px 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    }
-    .form-label-row { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .form-grid-full { grid-column: 1 / -1; }
-    label.field-label { display: block; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-    input[type="text"], input[type="number"], input[type="date"] {
-      width: 100%; padding: 12px 10px;
-      border: 1px solid var(--border); background: #faf8f4;
-      font-size: 16px; font-family: -apple-system, Georgia, serif;
-      color: var(--text); outline: none;
-      -webkit-appearance: none; border-radius: 0;
-    }
-    input:focus { border-color: var(--navy); background: #fff; }
-    .round-trip-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 10px 0; }
-    .rt-checkbox { width: 24px; height: 24px; accent-color: var(--navy); cursor: pointer; flex-shrink: 0; }
-    .rt-label { font-size: 15px; color: var(--text); cursor: pointer; }
-    .rt-hint { font-size: 12px; color: var(--muted); }
-    .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
-    .btn-primary {
-      background: var(--navy); color: var(--gold);
-      border: none; padding: 14px 24px;
-      font-size: 15px; font-family: -apple-system, Georgia, serif;
-      font-weight: 600; cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      border-radius: 0; min-width: 120px;
-      touch-action: manipulation;
-    }
-    .btn-primary:active { opacity: 0.75; }
-    .btn-secondary {
-      background: transparent; color: var(--muted);
-      border: 1px solid var(--border); padding: 14px 16px;
-      font-size: 15px; font-family: -apple-system, Georgia, serif;
-      cursor: pointer; -webkit-tap-highlight-color: transparent;
-      border-radius: 0; touch-action: manipulation;
-    }
-    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
-    .entry-count { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
-    .toolbar-btns { display: flex; gap: 6px; }
-    .btn-tool {
-      background: var(--navy); color: var(--gold-light);
-      border: none; padding: 9px 14px;
-      font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
-      font-family: -apple-system, Georgia, serif; cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation; border-radius: 0;
-    }
-    .btn-tool:active { opacity: 0.75; }
-    .table-wrap {
-      background: var(--card); border: 1px solid var(--border);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-      overflow-x: auto; -webkit-overflow-scrolling: touch;
-    }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
-    thead tr { background: var(--navy); color: #e8dcc8; }
-    th { padding: 10px 12px; text-align: left; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; cursor: pointer; user-select: none; white-space: nowrap; }
-    td { padding: 10px 12px; color: var(--text); border-bottom: 1px solid #ece6da; }
-    tr:last-child td { border-bottom: none; }
-    tbody tr:nth-child(even) { background: var(--row-alt); }
-    tbody tr.editing { background: #fffbe6 !important; }
-    .badge-rt { background: var(--navy); color: var(--gold); font-size: 9px; padding: 2px 7px; letter-spacing: 1px; white-space: nowrap; }
-    .badge-no { color: #ccc; font-size: 12px; }
-    .total-miles { font-weight: 700; color: var(--navy); }
-    tfoot tr { background: #f0ebe0; border-top: 2px solid var(--gold); }
-    tfoot td { padding: 10px 12px; font-size: 13px; }
-    .foot-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-    .foot-total { font-size: 18px; font-weight: 700; color: var(--navy); }
-    .row-actions { display: flex; gap: 6px; }
-    .btn-row {
-      background: transparent; padding: 6px 10px;
-      font-size: 12px; cursor: pointer;
-      font-family: -apple-system, Georgia, serif;
-      -webkit-tap-highlight-color: transparent;
-      white-space: nowrap; touch-action: manipulation; border-radius: 0;
-    }
-    .btn-edit { border: 1px solid var(--navy); color: var(--navy); }
-    .btn-delete { border: 1px solid var(--danger); color: var(--danger); }
-    .btn-row:active { opacity: 0.6; }
-    .empty { text-align: center; color: var(--muted); padding: 50px 20px; font-size: 15px; line-height: 1.8; }
-    .install-banner {
-      background: var(--gold); color: var(--navy);
-      padding: 12px 16px; margin: 14px 0 0;
-      font-size: 13px; line-height: 1.5;
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
-    }
-    .install-banner b { display: block; font-size: 14px; margin-bottom: 2px; }
-    .btn-dismiss {
-      background: var(--navy); color: var(--gold);
-      border: none; padding: 8px 14px; font-size: 13px;
-      cursor: pointer; flex-shrink: 0;
-      font-family: -apple-system, Georgia, serif;
-      touch-action: manipulation;
-    }
-    #csv-import { display: none; }
-    @media (max-width: 480px) {
-      .header-title { font-size: 22px; }
-      .header-total-num { font-size: 22px; }
-      .form-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Miles" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <title>Mileage Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f0e8; --card: #fff; --navy: #1a1a2e; --gold: #c9a84c;
+      --gold-light: #e8d5a3; --text: #2c2c2c; --muted: #888;
+      --border: #d6cbb8; --row-alt: #faf7f2; --danger: #c0392b; --green: #27ae60;
+      --safe-top: env(safe-area-inset-top, 0px); --safe-bot: env(safe-area-inset-bottom, 0px);
+    }
+    body { font-family: -apple-system, Georgia, serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: calc(80px + var(--safe-bot)); }
+    .header { background: var(--navy); color: #e8dcc8; padding: calc(14px + var(--safe-top)) 20px 16px; position: sticky; top: 0; z-index: 200; border-bottom: 3px solid var(--gold); }
+    .header-inner { display: flex; justify-content: space-between; align-items: flex-end; max-width: 720px; margin: 0 auto; }
+    .header-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 3px; }
+    .header-title { font-size: 24px; font-weight: 700; }
+    .header-right { text-align: right; }
+    .header-total-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+    .header-total-num { font-size: 24px; font-weight: 700; color: #fff; }
+    .tabs-wrap { background: var(--navy); border-bottom: 3px solid var(--gold); }
+    .tabs { display: flex; max-width: 720px; margin: 0 auto; }
+    .tab { flex: 1; padding: 11px 8px; text-align: center; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #aaa; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -3px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); font-weight: 700; }
+    .main { max-width: 720px; margin: 0 auto; padding: 0 14px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .card { background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--gold); padding: 16px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .form-grid-full { grid-column: 1 / -1; }
+    label.field-label { display: block; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    input[type=text], input[type=number], input[type=date] { width: 100%; padding: 12px 10px; border: 1px solid var(--border); background: #faf8f4; font-size: 16px; font-family: -apple-system, Georgia, serif; color: var(--text); outline: none; -webkit-appearance: none; border-radius: 0; }
+    input:focus { border-color: var(--navy); background: #fff; }
+    .rt-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 8px 0; }
+    .rt-checkbox { width: 24px; height: 24px; accent-color: var(--navy); cursor: pointer; flex-shrink: 0; }
+    .rt-label { font-size: 15px; color: var(--text); cursor: pointer; }
+    .rt-hint { font-size: 12px; color: var(--muted); }
+    .form-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+    .btn { border: none; padding: 13px 20px; font-size: 14px; font-family: -apple-system, Georgia, serif; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; border-radius: 0; }
+    .btn:active { opacity: 0.75; }
+    .btn-primary { background: var(--navy); color: var(--gold); font-weight: 600; }
+    .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border) !important; }
+    .btn-tool { background: var(--navy); color: var(--gold-light); padding: 9px 14px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+    .btn-sm { padding: 7px 13px; font-size: 13px; }
+    .quick-trips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 4px; }
+    .quick-trip-btn { background: var(--navy); color: #e8dcc8; border: 2px solid var(--gold); padding: 14px 10px; text-align: center; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; border-radius: 0; font-family: -apple-system, Georgia, serif; display: flex; flex-direction: column; gap: 5px; align-items: center; width: 100%; }
+    .quick-trip-btn:active { background: var(--gold); color: var(--navy); }
+    .qt-name { font-size: 13px; font-weight: 600; line-height: 1.3; }
+    .qt-miles { font-size: 11px; color: var(--gold); letter-spacing: 1px; }
+    .qt-rt { font-size: 10px; color: #aaa; }
+    .no-trips { color: var(--muted); font-size: 14px; padding: 10px 0; text-align: center; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
+    .entry-count { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+    .toolbar-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .table-wrap { background: var(--card); border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px; }
+    thead tr { background: var(--navy); color: #e8dcc8; }
+    th { padding: 10px 12px; text-align: left; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; cursor: pointer; user-select: none; white-space: nowrap; }
+    td { padding: 10px 12px; color: var(--text); border-bottom: 1px solid #ece6da; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:nth-child(even) { background: var(--row-alt); }
+    tbody tr.editing { background: #fffbe6 !important; }
+    .badge-rt { background: var(--navy); color: var(--gold); font-size: 9px; padding: 2px 7px; letter-spacing: 1px; white-space: nowrap; }
+    .badge-no { color: #ccc; font-size: 12px; }
+    .total-miles { font-weight: 700; color: var(--navy); }
+    tfoot tr { background: #f0ebe0; border-top: 2px solid var(--gold); }
+    tfoot td { padding: 10px 12px; }
+    .foot-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .foot-total { font-size: 18px; font-weight: 700; color: var(--navy); }
+    .row-actions { display: flex; gap: 6px; }
+    .btn-row { background: transparent; padding: 7px 11px; font-size: 12px; cursor: pointer; font-family: -apple-system, Georgia, serif; -webkit-tap-highlight-color: transparent; white-space: nowrap; touch-action: manipulation; border-radius: 0; }
+    .btn-row:active { opacity: 0.6; }
+    .btn-edit { border: 1px solid var(--navy); color: var(--navy); }
+    .btn-delete { border: 1px solid var(--danger); color: var(--danger); }
+    .saved-trip-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .saved-trip-row:last-child { border-bottom: none; }
+    .saved-trip-info { flex: 1; }
+    .saved-trip-name { font-size: 15px; font-weight: 600; }
+    .saved-trip-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .saved-trip-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .no-saved { color: var(--muted); font-size: 14px; padding: 16px 0; text-align: center; }
+    .install-banner { background: var(--gold); color: var(--navy); padding: 12px 16px; margin: 14px 0 0; font-size: 13px; line-height: 1.5; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .install-banner b { display: block; font-size: 14px; margin-bottom: 2px; }
+    .empty { text-align: center; color: var(--muted); padding: 50px 20px; font-size: 15px; line-height: 1.8; }
+    .section-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+    .confirm-card { border-top-color: var(--green) !important; }
+    .confirm-label { color: var(--green) !important; }
+    #csv-import { display: none; }
+    @media (max-width: 480px) {
+      .header-title { font-size: 20px; } .header-total-num { font-size: 20px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .quick-trips-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    }
+  </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-inner">
-    <div>
-      <div class="header-label">Personal Log</div>
-      <div class="header-title">Mileage Tracker</div>
-    </div>
-    <div>
-      <div class="header-total-label">Total Miles</div>
-      <div class="header-total-num" id="total-display">0.0</div>
-    </div>
-  </div>
+  <div class="header-inner">
+    <div>
+      <div class="header-label">Personal Log</div>
+      <div class="header-title">Mileage Tracker</div>
+    </div>
+    <div class="header-right">
+      <div class="header-total-label">Total Miles</div>
+      <div class="header-total-num" id="total-display">0.0</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <div class="tab active" data-tab="log">📋 Log</div>
+    <div class="tab" data-tab="quick">⚡ Quick Trips</div>
+    <div class="tab" data-tab="manage">⚙️ Manage</div>
+  </div>
 </div>
 
 <div class="main">
 
-  <div class="install-banner" id="install-banner" style="display:none">
-    <div>
-      <b>📱 Add to Home Screen</b>
-      Tap Share in Safari → "Add to Home Screen" to use as an app.
-    </div>
-    <button class="btn-dismiss" id="btn-dismiss">Got it</button>
-  </div>
+  <div class="install-banner" id="install-banner" style="display:none">
+    <div><b>📱 Add to Home Screen</b>Tap Share in Safari then "Add to Home Screen"</div>
+    <button class="btn btn-primary btn-sm" id="btn-dismiss">Got it</button>
+  </div>
 
-  <div class="form-card">
-    <div class="form-label-row" id="form-mode-label">+ New Entry</div>
-    <div class="form-grid">
-      <div class="form-grid-full">
-        <label class="field-label" for="inp-name">Description / Trip Name</label>
-        <input type="text" id="inp-name" placeholder="e.g. Client visit, Costco run…" autocomplete="off" autocorrect="off" />
-      </div>
-      <div>
-        <label class="field-label" for="inp-miles">Miles</label>
-        <input type="number" id="inp-miles" placeholder="0.0" min="0" step="0.1" inputmode="decimal" />
-      </div>
-      <div>
-        <label class="field-label" for="inp-date">Date</label>
-        <input type="date" id="inp-date" />
-      </div>
-    </div>
-    <div class="round-trip-row">
-      <input type="checkbox" class="rt-checkbox" id="inp-rt" />
-      <label class="rt-label" for="inp-rt">Round Trip <span class="rt-hint">(doubles mileage)</span></label>
-    </div>
-    <div class="form-actions">
-      <button class="btn-secondary" id="btn-cancel" style="display:none">Cancel</button>
-      <button class="btn-primary" id="btn-submit">Add Entry</button>
-    </div>
-  </div>
+  <!-- LOG PAGE -->
 
-  <div class="toolbar">
-    <div class="entry-count" id="entry-count">0 entries</div>
-    <div class="toolbar-btns">
-      <button class="btn-tool" id="btn-export">Export CSV</button>
-      <button class="btn-tool" id="btn-import-trigger">Import CSV</button>
-      <input type="file" id="csv-import" accept=".csv" />
-    </div>
-  </div>
+  <div class="page active" id="page-log">
+    <div class="card">
+      <div class="card-label" id="form-mode-label">+ New Entry</div>
+      <div class="form-grid">
+        <div class="form-grid-full">
+          <label class="field-label" for="inp-name">Description / Trip Name</label>
+          <input type="text" id="inp-name" placeholder="e.g. Client visit, Costco run…" autocomplete="off" autocorrect="off" />
+        </div>
+        <div>
+          <label class="field-label" for="inp-miles">Miles</label>
+          <input type="number" id="inp-miles" placeholder="0.0" min="0" step="0.1" inputmode="decimal" />
+        </div>
+        <div>
+          <label class="field-label" for="inp-date">Date</label>
+          <input type="date" id="inp-date" />
+        </div>
+      </div>
+      <div class="rt-row">
+        <input type="checkbox" class="rt-checkbox" id="inp-rt" />
+        <label class="rt-label" for="inp-rt">Round Trip <span class="rt-hint">(doubles mileage)</span></label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="btn-cancel" style="display:none">Cancel</button>
+        <button class="btn btn-primary" id="btn-submit">Add Entry</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="entry-count" id="entry-count">0 entries</div>
+      <div class="toolbar-btns">
+        <button class="btn btn-tool" id="btn-export">Export CSV</button>
+        <button class="btn btn-tool" id="btn-import-trigger">Import CSV</button>
+        <input type="file" id="csv-import" accept=".csv" />
+      </div>
+    </div>
+    <div id="table-container"></div>
+  </div>
 
-  <div id="table-container"></div>
+  <!-- QUICK TRIPS PAGE -->
+
+  <div class="page" id="page-quick">
+    <div class="card">
+      <div class="card-label">Tap to instantly log that trip for today</div>
+      <div class="quick-trips-grid" id="quick-trips-grid"></div>
+      <div class="no-trips" id="no-trips-msg" style="display:none">No quick trips yet. Go to Manage to create some!</div>
+    </div>
+    <div class="card confirm-card" id="quick-confirm" style="display:none">
+      <div class="card-label confirm-label">Trip Logged!</div>
+      <div id="quick-confirm-text" style="font-size:15px;margin-bottom:12px;"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-quick-dismiss">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- MANAGE PAGE -->
+
+  <div class="page" id="page-manage">
+    <div class="card">
+      <div class="card-label" id="qt-form-label">+ New Quick Trip</div>
+      <div class="form-grid">
+        <div class="form-grid-full">
+          <label class="field-label" for="qt-name">Trip Name</label>
+          <input type="text" id="qt-name" placeholder="e.g. Office, Gym, Airport…" autocomplete="off" autocorrect="off" />
+        </div>
+        <div>
+          <label class="field-label" for="qt-miles">Miles (one way)</label>
+          <input type="number" id="qt-miles" placeholder="0.0" min="0" step="0.1" inputmode="decimal" />
+        </div>
+        <div>
+          <label class="field-label">Default Setting</label>
+          <div class="rt-row" style="margin:0;padding:10px 0 0">
+            <input type="checkbox" class="rt-checkbox" id="qt-rt" />
+            <label class="rt-label" for="qt-rt" style="font-size:14px">Round Trip</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="btn-qt-cancel" style="display:none">Cancel</button>
+        <button class="btn btn-primary" id="btn-qt-save">Save Quick Trip</button>
+      </div>
+    </div>
+    <div class="section-title">Your Quick Trips</div>
+    <div class="card" style="padding:0 16px">
+      <div id="saved-trips-list"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-(function() {
-  'use strict';
+(function(){
+'use strict';
+var EK='mileage_tracker_v1', QK='mileage_quick_trips_v1';
+var entries=[], quickTrips=[], editId=null, editQtId=null, sortKey='date', sortDir='desc';
 
-  const STORAGE_KEY = 'mileage_tracker_v1';
-  let entries = [];
-  let editId = null;
-  let sortKey = 'date';
-  let sortDir = 'desc';
+function loadAll(){
+  try{entries=JSON.parse(localStorage.getItem(EK)||'[]');}catch(e){entries=[];}
+  try{quickTrips=JSON.parse(localStorage.getItem(QK)||'[]');}catch(e){quickTrips=[];}
+}
+function saveE(){ try{localStorage.setItem(EK,JSON.stringify(entries));}catch(e){} }
+function saveQ(){ try{localStorage.setItem(QK,JSON.stringify(quickTrips));}catch(e){} }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n){ return n<10?'0'+n:''+n; }
+function fmtDate(s){ if(!s)return''; var p=s.split('-'); return p.length===3?p[1]+'/'+p[2]+'/'+p[0]:s; }
+function fmt(n){ return parseFloat(n).toFixed(1); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function uid(){ return Date.now()+Math.floor(Math.random()*9999); }
 
-  // ── Persistence ──────────────────────────────────────────────────────────
-  function load() {
-    try { entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-    catch(e) { entries = []; }
-  }
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active',t.getAttribute('data-tab')===name); });
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('active',p.id==='page-'+name); });
+  if(name==='quick') renderQt();
+  if(name==='manage') renderSaved();
+}
 
-  function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
-    catch(e) { alert('Could not save data. Storage may be full.'); }
-  }
+function render(){
+  var total=0; for(var i=0;i<entries.length;i++) total+=entries[i].actual;
+  document.getElementById('total-display').textContent=fmt(total);
+  document.getElementById('entry-count').textContent=entries.length+(entries.length===1?' entry':' entries');
+  var c=document.getElementById('table-container');
+  if(!entries.length){ c.innerHTML='<div class="empty">No entries yet.<br>Add your first trip above.</div>'; return; }
+  var sorted=entries.slice().sort(function(a,b){
+    var av=a[sortKey],bv=b[sortKey];
+    if(sortKey==='actual'||sortKey==='miles'){av=+av;bv=+bv;}
+    if(av<bv)return sortDir==='asc'?-1:1; if(av>bv)return sortDir==='asc'?1:-1; return 0;
+  });
+  function arr(k){ return sortKey===k?(sortDir==='asc'?' ▲':' ▼'):' ⬍'; }
+  var rows=sorted.map(function(e){
+    return '<tr class="'+(editId===e.id?'editing':'')+'">'+
+      '<td>'+fmtDate(e.date)+'</td>'+
+      '<td style="font-weight:500">'+esc(e.name)+'</td>'+
+      '<td>'+fmt(e.miles)+'</td>'+
+      '<td>'+(e.roundTrip?'<span class="badge-rt">YES</span>':'<span class="badge-no">&#8212;</span>')+'</td>'+
+      '<td class="total-miles">'+fmt(e.actual)+'</td>'+
+      '<td><div class="row-actions">'+
+        '<button class="btn-row btn-edit" data-action="edit" data-id="'+e.id+'">Edit</button>'+
+        '<button class="btn-row btn-delete" data-action="delete" data-id="'+e.id+'">Del</button>'+
+      '</div></td></tr>';
+  }).join('');
+  c.innerHTML='<div class="table-wrap"><table>'+
+    '<thead><tr>'+
+      '<th data-sort="date">Date'+arr('date')+'</th>'+
+      '<th data-sort="name">Description'+arr('name')+'</th>'+
+      '<th data-sort="miles">Miles'+arr('miles')+'</th>'+
+      '<th data-sort="roundTrip">Round Trip'+arr('roundTrip')+'</th>'+
+      '<th data-sort="actual">Total'+arr('actual')+'</th>'+
+      '<th>Actions</th></tr></thead>'+
+    '<tbody>'+rows+'</tbody>'+
+    '<tfoot><tr>'+
+      '<td colspan="4" class="foot-label">'+entries.length+(entries.length===1?' entry':' entries')+'</td>'+
+      '<td class="foot-total">'+fmt(total)+'</td><td></td></tr></tfoot>'+
+  '</table></div>';
+}
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
-  function todayStr() {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const day = String(d.getDate()).padStart(2,'0');
-    return y+'-'+m+'-'+day;
-  }
+function gf(){ return { name:document.getElementById('inp-name').value.trim(), miles:parseFloat(document.getElementById('inp-miles').value), date:document.getElementById('inp-date').value, roundTrip:document.getElementById('inp-rt').checked }; }
+function sf(f){ document.getElementById('inp-name').value=f.name||''; document.getElementById('inp-miles').value=f.miles!==undefined&&f.miles!==''?f.miles:''; document.getElementById('inp-date').value=f.date||todayStr(); document.getElementById('inp-rt').checked=!!f.roundTrip; }
+function cf(){ sf({name:'',miles:'',date:todayStr(),roundTrip:false}); }
 
-  function fmtDate(s) {
-    if (!s) return '';
-    const parts = s.split('-');
-    if (parts.length !== 3) return s;
-    return parts[1]+'/'+parts[2]+'/'+parts[0];
-  }
+function submit(){
+  var f=gf();
+  if(!f.name){alert('Please enter a description.');return;}
+  if(isNaN(f.miles)||f.miles<=0){alert('Please enter valid miles.');return;}
+  if(!f.date){alert('Please select a date.');return;}
+  var actual=f.roundTrip?f.miles*2:f.miles;
+  if(editId!==null){
+    for(var i=0;i<entries.length;i++){ if(entries[i].id===editId){ entries[i]={id:editId,name:f.name,miles:f.miles,date:f.date,roundTrip:f.roundTrip,actual:actual}; break; } }
+    exitEdit();
+  } else { entries.push({id:uid(),name:f.name,miles:f.miles,date:f.date,roundTrip:f.roundTrip,actual:actual}); }
+  saveE(); cf(); render();
+}
 
-  function fmtMiles(n) { return parseFloat(n).toFixed(1); }
+function startEdit(id){
+  editId=id; var e=null;
+  for(var i=0;i<entries.length;i++){if(entries[i].id===id){e=entries[i];break;}}
+  if(!e)return; sf(e);
+  document.getElementById('form-mode-label').textContent='Edit Entry';
+  document.getElementById('btn-cancel').style.display='inline-block';
+  document.getElementById('btn-submit').textContent='Save Changes';
+  showTab('log'); window.scrollTo({top:0,behavior:'smooth'}); render();
+}
+function exitEdit(){
+  editId=null;
+  document.getElementById('form-mode-label').textContent='+ New Entry';
+  document.getElementById('btn-cancel').style.display='none';
+  document.getElementById('btn-submit').textContent='Add Entry';
+}
+function cancelEdit(){ exitEdit(); cf(); render(); }
+function delEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  entries=entries.filter(function(e){return e.id!==id;});
+  if(editId===id){exitEdit();cf();}
+  saveE(); render();
+}
+function setSort(k){
+  if(sortKey===k)sortDir=sortDir==='asc'?'desc':'asc'; else{sortKey=k;sortDir='asc';} render();
+}
 
-  function escHtml(s) {
-    return String(s)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;');
-  }
+function exportCSV(){
+  if(!entries.length){alert('No entries to export.');return;}
+  var h='Date,Description,Miles,Round Trip,Total Miles\n';
+  var r=entries.map(function(e){return e.date+',"'+e.name.replace(/"/g,'""')+'",'+e.miles+','+(e.roundTrip?'Yes':'No')+','+e.actual;}).join('\n');
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([h+r],{type:'text/csv'})); a.download='mileage-'+todayStr()+'.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function importCSV(ev){
+  var file=ev.target.files[0]; if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var lines=e.target.result.trim().split('\n').slice(1); var added=0;
+    lines.forEach(function(line){
+      var cols=line.match(/(".*?"|[^,]+)(?=,|$)/g);
+      if(!cols||cols.length<4)return;
+      var date=cols[0].trim(),name=cols[1].trim().replace(/^"|"$/g,'').replace(/""/g,'"'),miles=parseFloat(cols[2]),rt=cols[3].trim().toLowerCase()==='yes';
+      if(!date||!name||isNaN(miles))return;
+      entries.push({id:uid(),date:date,name:name,miles:miles,roundTrip:rt,actual:rt?miles*2:miles}); added++;
+    });
+    saveE(); render(); alert('Imported '+added+' entries.');
+  };
+  reader.readAsText(file); ev.target.value='';
+}
 
-  // ── Render ───────────────────────────────────────────────────────────────
-  function render() {
-    var total = 0;
-    for (var i=0; i<entries.length; i++) total += entries[i].actual;
-    document.getElementById('total-display').textContent = fmtMiles(total);
-    document.getElementById('entry-count').textContent =
-      entries.length + (entries.length === 1 ? ' entry' : ' entries');
+function renderQt(){
+  var grid=document.getElementById('quick-trips-grid'), msg=document.getElementById('no-trips-msg');
+  if(!quickTrips.length){grid.innerHTML='';msg.style.display='block';return;}
+  msg.style.display='none';
+  grid.innerHTML=quickTrips.map(function(qt){
+    var ml=qt.roundTrip?fmt(qt.miles*2)+' mi RT':fmt(qt.miles)+' mi';
+    return '<button class="quick-trip-btn" data-qt-id="'+qt.id+'">'+
+      '<span class="qt-name">'+esc(qt.name)+'</span>'+
+      '<span class="qt-miles">'+ml+'</span>'+
+      (qt.roundTrip?'<span class="qt-rt">round trip</span>':'')+
+    '</button>';
+  }).join('');
+}
 
-    var container = document.getElementById('table-container');
+function logQt(id){
+  var qt=null; for(var i=0;i<quickTrips.length;i++){if(quickTrips[i].id===id){qt=quickTrips[i];break;}}
+  if(!qt)return;
+  var actual=qt.roundTrip?qt.miles*2:qt.miles;
+  entries.push({id:uid(),name:qt.name,miles:qt.miles,date:todayStr(),roundTrip:qt.roundTrip,actual:actual});
+  saveE(); render();
+  var total=0; for(var j=0;j<entries.length;j++) total+=entries[j].actual;
+  document.getElementById('total-display').textContent=fmt(total);
+  document.getElementById('quick-confirm-text').textContent='"'+qt.name+'" — '+fmt(actual)+' miles logged for today.';
+  document.getElementById('quick-confirm').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-    if (entries.length === 0) {
-      container.innerHTML = '<div class="empty">No entries yet.<br>Add your first trip above.</div>';
-      return;
-    }
+function gqf(){ return{name:document.getElementById('qt-name').value.trim(),miles:parseFloat(document.getElementById('qt-miles').value),roundTrip:document.getElementById('qt-rt').checked}; }
+function sqf(f){ document.getElementById('qt-name').value=f.name||''; document.getElementById('qt-miles').value=f.miles!==undefined?f.miles:''; document.getElementById('qt-rt').checked=!!f.roundTrip; }
+function cqf(){ sqf({name:'',miles:'',roundTrip:false}); }
 
-    var sorted = entries.slice().sort(function(a, b) {
-      var av = a[sortKey], bv = b[sortKey];
-      if (sortKey === 'actual' || sortKey === 'miles') { av = +av; bv = +bv; }
-      if (av < bv) return sortDir === 'asc' ? -1 : 1;
-      if (av > bv) return sortDir === 'asc' ? 1 : -1;
-      return 0;
-    });
+function saveQt(){
+  var f=gqf();
+  if(!f.name){alert('Please enter a trip name.');return;}
+  if(isNaN(f.miles)||f.miles<=0){alert('Please enter valid miles.');return;}
+  if(editQtId!==null){
+    for(var i=0;i<quickTrips.length;i++){if(quickTrips[i].id===editQtId){quickTrips[i]={id:editQtId,name:f.name,miles:f.miles,roundTrip:f.roundTrip};break;}}
+    exitQtEdit();
+  } else { quickTrips.push({id:uid(),name:f.name,miles:f.miles,roundTrip:f.roundTrip}); }
+  saveQ(); cqf(); renderSaved();
+}
+function startQtEdit(id){
+  var qt=null; for(var i=0;i<quickTrips.length;i++){if(quickTrips[i].id===id){qt=quickTrips[i];break;}}
+  if(!qt)return; editQtId=id; sqf(qt);
+  document.getElementById('qt-form-label').textContent='Edit Quick Trip';
+  document.getElementById('btn-qt-cancel').style.display='inline-block';
+  document.getElementById('btn-qt-save').textContent='Update Trip';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function exitQtEdit(){
+  editQtId=null;
+  document.getElementById('qt-form-label').textContent='+ New Quick Trip';
+  document.getElementById('btn-qt-cancel').style.display='none';
+  document.getElementById('btn-qt-save').textContent='Save Quick Trip';
+}
+function delQt(id){
+  if(!confirm('Remove this quick trip?'))return;
+  quickTrips=quickTrips.filter(function(qt){return qt.id!==id;});
+  if(editQtId===id){exitQtEdit();cqf();}
+  saveQ(); renderSaved();
+}
+function renderSaved(){
+  var list=document.getElementById('saved-trips-list');
+  if(!quickTrips.length){list.innerHTML='<div class="no-saved">No quick trips saved yet.</div>';return;}
+  list.innerHTML=quickTrips.map(function(qt){
+    var detail=fmt(qt.miles)+' mi one-way'+(qt.roundTrip?' · Round trip ('+fmt(qt.miles*2)+' mi total)':'');
+    return '<div class="saved-trip-row">'+
+      '<div class="saved-trip-info"><div class="saved-trip-name">'+esc(qt.name)+'</div><div class="saved-trip-detail">'+detail+'</div></div>'+
+      '<div class="saved-trip-actions">'+
+        '<button class="btn-row btn-edit" data-qt-action="edit" data-qt-id="'+qt.id+'">Edit</button>'+
+        '<button class="btn-row btn-delete" data-qt-action="delete" data-qt-id="'+qt.id+'">Delete</button>'+
+      '</div></div>';
+  }).join('');
+}
 
-    function arrow(k) { return sortKey===k ? (sortDir==='asc' ? ' ▲' : ' ▼') : ' ⬍'; }
+// EVENTS
+document.querySelectorAll('.tab').forEach(function(t){ t.addEventListener('click',function(){showTab(t.getAttribute('data-tab'));}); });
+document.getElementById('btn-submit').addEventListener('click',submit);
+document.getElementById('btn-cancel').addEventListener('click',cancelEdit);
+document.getElementById('btn-export').addEventListener('click',exportCSV);
+document.getElementById('btn-import-trigger').addEventListener('click',function(){document.getElementById('csv-import').click();});
+document.getElementById('csv-import').addEventListener('change',importCSV);
+document.getElementById('table-container').addEventListener('click',function(e){
+  var th=e.target.closest('th[data-sort]'); if(th){setSort(th.getAttribute('data-sort'));return;}
+  var btn=e.target.closest('button[data-action]'); if(btn){ var id=parseInt(btn.getAttribute('data-id'),10); if(btn.getAttribute('data-action')==='edit')startEdit(id); else delEntry(id); }
+});
+['inp-name','inp-miles','inp-date'].forEach(function(id){ document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')submit();}); });
+document.getElementById('quick-trips-grid').addEventListener('click',function(e){ var btn=e.target.closest('button[data-qt-id]'); if(btn)logQt(parseInt(btn.getAttribute('data-qt-id'),10)); });
+document.getElementById('btn-quick-dismiss').addEventListener('click',function(){document.getElementById('quick-confirm').style.display='none';});
+document.getElementById('btn-qt-save').addEventListener('click',saveQt);
+document.getElementById('btn-qt-cancel').addEventListener('click',function(){exitQtEdit();cqf();renderSaved();});
+['qt-name','qt-miles'].forEach(function(id){ document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')saveQt();}); });
+document.getElementById('saved-trips-list').addEventListener('click',function(e){
+  var btn=e.target.closest('button[data-qt-action]'); if(!btn)return;
+  var id=parseInt(btn.getAttribute('data-qt-id'),10);
+  if(btn.getAttribute('data-qt-action')==='edit')startQtEdit(id); else delQt(id);
+});
+document.getElementById('btn-dismiss').addEventListener('click',function(){localStorage.setItem('install_dismissed','1');document.getElementById('install-banner').style.display='none';});
 
-    var rows = sorted.map(function(e) {
-      return '<tr data-id="'+e.id+'" class="'+(editId===e.id?'editing':'')+'">' +
-        '<td>'+fmtDate(e.date)+'</td>' +
-        '<td style="font-weight:500">'+escHtml(e.name)+'</td>' +
-        '<td>'+fmtMiles(e.miles)+'</td>' +
-        '<td>'+(e.roundTrip ? '<span class="badge-rt">YES</span>' : '<span class="badge-no">—</span>')+'</td>' +
-        '<td class="total-miles">'+fmtMiles(e.actual)+'</td>' +
-        '<td><div class="row-actions">' +
-          '<button class="btn-row btn-edit" data-action="edit" data-id="'+e.id+'">Edit</button>' +
-          '<button class="btn-row btn-delete" data-action="delete" data-id="'+e.id+'">Del</button>' +
-        '</div></td>' +
-      '</tr>';
-    }).join('');
-
-    container.innerHTML =
-      '<div class="table-wrap"><table>' +
-        '<thead><tr>' +
-          '<th data-sort="date">Date'+arrow('date')+'</th>' +
-          '<th data-sort="name">Description'+arrow('name')+'</th>' +
-          '<th data-sort="miles">Miles'+arrow('miles')+'</th>' +
-          '<th data-sort="roundTrip">Round Trip'+arrow('roundTrip')+'</th>' +
-          '<th data-sort="actual">Total'+arrow('actual')+'</th>' +
-          '<th>Actions</th>' +
-        '</tr></thead>' +
-        '<tbody>'+rows+'</tbody>' +
-        '<tfoot><tr>' +
-          '<td colspan="4" class="foot-label">'+entries.length+(entries.length===1?' entry':' entries')+'</td>' +
-          '<td class="foot-total">'+fmtMiles(total)+'</td>' +
-          '<td></td>' +
-        '</tr></tfoot>' +
-      '</table></div>';
-  }
-
-  // ── Form ─────────────────────────────────────────────────────────────────
-  function getForm() {
-    return {
-      name: document.getElementById('inp-name').value.trim(),
-      miles: parseFloat(document.getElementById('inp-miles').value),
-      date: document.getElementById('inp-date').value,
-      roundTrip: document.getElementById('inp-rt').checked
-    };
-  }
-
-  function setForm(f) {
-    document.getElementById('inp-name').value = f.name || '';
-    document.getElementById('inp-miles').value = f.miles !== undefined ? f.miles : '';
-    document.getElementById('inp-date').value = f.date || todayStr();
-    document.getElementById('inp-rt').checked = !!f.roundTrip;
-  }
-
-  function clearForm() {
-    setForm({ name: '', miles: '', date: todayStr(), roundTrip: false });
-  }
-
-  function handleSubmit() {
-    var f = getForm();
-    if (!f.name) { alert('Please enter a description.'); return; }
-    if (isNaN(f.miles) || f.miles <= 0) { alert('Please enter a valid mileage.'); return; }
-    if (!f.date) { alert('Please select a date.'); return; }
-
-    var actual = f.roundTrip ? f.miles * 2 : f.miles;
-
-    if (editId !== null) {
-      for (var i=0; i<entries.length; i++) {
-        if (entries[i].id === editId) {
-          entries[i] = { id: editId, name: f.name, miles: f.miles, date: f.date, roundTrip: f.roundTrip, actual: actual };
-          break;
-        }
-      }
-      exitEditMode();
-    } else {
-      entries.push({ id: Date.now(), name: f.name, miles: f.miles, date: f.date, roundTrip: f.roundTrip, actual: actual });
-    }
-
-    save();
-    clearForm();
-    render();
-  }
-
-  function startEdit(id) {
-    editId = id;
-    var e = null;
-    for (var i=0; i<entries.length; i++) { if (entries[i].id === id) { e = entries[i]; break; } }
-    if (!e) return;
-    setForm(e);
-    document.getElementById('form-mode-label').textContent = '✎ Edit Entry';
-    document.getElementById('btn-cancel').style.display = 'inline-block';
-    document.getElementById('btn-submit').textContent = 'Save Changes';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    render();
-  }
-
-  function exitEditMode() {
-    editId = null;
-    document.getElementById('form-mode-label').textContent = '+ New Entry';
-    document.getElementById('btn-cancel').style.display = 'none';
-    document.getElementById('btn-submit').textContent = 'Add Entry';
-  }
-
-  function cancelEdit() {
-    exitEditMode();
-    clearForm();
-    render();
-  }
-
-  function deleteEntry(id) {
-    if (!confirm('Delete this entry?')) return;
-    entries = entries.filter(function(e) { return e.id !== id; });
-    if (editId === id) { exitEditMode(); clearForm(); }
-    save();
-    render();
-  }
-
-  // ── Sort ─────────────────────────────────────────────────────────────────
-  function setSort(key) {
-    if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    else { sortKey = key; sortDir = 'asc'; }
-    render();
-  }
-
-  // ── CSV ──────────────────────────────────────────────────────────────────
-  function exportCSV() {
-    if (entries.length === 0) { alert('No entries to export.'); return; }
-    var header = 'Date,Description,Miles,Round Trip,Total Miles\n';
-    var rows = entries.map(function(e) {
-      return e.date+',"'+e.name.replace(/"/g,'""')+'",'+e.miles+','+(e.roundTrip?'Yes':'No')+','+e.actual;
-    }).join('\n');
-    var blob = new Blob([header+rows], { type: 'text/csv' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'mileage-'+todayStr()+'.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  function importCSV(event) {
-    var file = event.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var lines = e.target.result.trim().split('\n').slice(1);
-      var added = 0;
-      lines.forEach(function(line) {
-        var cols = line.match(/(".*?"|[^,]+)(?=,|$)/g);
-        if (!cols || cols.length < 4) return;
-        var date = cols[0].trim();
-        var name = cols[1].trim().replace(/^"|"$/g,'').replace(/""/g,'"');
-        var miles = parseFloat(cols[2]);
-        var roundTrip = cols[3].trim().toLowerCase() === 'yes';
-        if (!date || !name || isNaN(miles)) return;
-        var actual = roundTrip ? miles*2 : miles;
-        entries.push({ id: Date.now()+added, date: date, name: name, miles: miles, roundTrip: roundTrip, actual: actual });
-        added++;
-      });
-      save(); render();
-      alert('Imported '+added+' entries.');
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-  }
-
-  // ── Install Banner ───────────────────────────────────────────────────────
-  function showInstallBanner() {
-    var dismissed = localStorage.getItem('install_dismissed');
-    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    var isStandalone = window.navigator.standalone;
-    if (isIOS && !isStandalone && !dismissed) {
-      document.getElementById('install-banner').style.display = 'flex';
-    }
-  }
-
-  // ── Event Listeners ──────────────────────────────────────────────────────
-  document.getElementById('btn-submit').addEventListener('click', handleSubmit);
-  document.getElementById('btn-cancel').addEventListener('click', cancelEdit);
-  document.getElementById('btn-export').addEventListener('click', exportCSV);
-  document.getElementById('btn-import-trigger').addEventListener('click', function() {
-    document.getElementById('csv-import').click();
-  });
-  document.getElementById('csv-import').addEventListener('change', importCSV);
-  document.getElementById('btn-dismiss').addEventListener('click', function() {
-    localStorage.setItem('install_dismissed','1');
-    document.getElementById('install-banner').style.display = 'none';
-  });
-
-  // Table click delegation (sort + row actions)
-  document.getElementById('table-container').addEventListener('click', function(e) {
-    var th = e.target.closest('th[data-sort]');
-    if (th) { setSort(th.getAttribute('data-sort')); return; }
-    var btn = e.target.closest('button[data-action]');
-    if (btn) {
-      var action = btn.getAttribute('data-action');
-      var id = parseInt(btn.getAttribute('data-id'), 10);
-      if (action === 'edit') startEdit(id);
-      if (action === 'delete') deleteEntry(id);
-    }
-  });
-
-  // Enter key on inputs
-  ['inp-name','inp-miles','inp-date'].forEach(function(id) {
-    document.getElementById(id).addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') handleSubmit();
-    });
-  });
-
-  // ── Init ─────────────────────────────────────────────────────────────────
-  load();
-  clearForm();
-  render();
-  showInstallBanner();
-
+// INIT
+function showInstallBanner(){
+  var dismissed=localStorage.getItem('install_dismissed');
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(isIOS&&!window.navigator.standalone&&!dismissed) document.getElementById('install-banner').style.display='flex';
+}
+loadAll(); cf(); render(); showInstallBanner();
 })();
 </script>
 
